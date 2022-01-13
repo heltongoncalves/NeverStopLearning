@@ -1,0 +1,50 @@
+.custom-toggler.navbar-toggler {
+    border-color: rgb(0,0,0);
+	border-width: 1px;
+}
+.custom-toggler .navbar-toggler-icon {
+  background-image: url("./../../fw/pic/menu.png");
+}
+
+.custom-bgindex {
+	background: url('./../../fw/pic/index_background.jpg') no-repeat center center fixed; 
+	-webkit-background-size: cover; 
+	-moz-background-size: cover; 
+	-o-background-size: cover;  
+	background-size: cover;
+}	
+
+.custom-bgenglish {
+	background: url('./../../fw/pic/english_background.jpg') no-repeat center center fixed; 
+	-webkit-background-size: cover; 
+	-moz-background-size: cover; 
+	-o-background-size: cover;  
+	background-size: cover;
+}	
+
+.custom-bgdeutsch {
+	background: url('./../../fw/pic/deutsch_background.jpg') no-repeat center center fixed; 
+	-webkit-background-size: cover; 
+	-moz-background-size: cover; 
+	-o-background-size: cover;  
+	background-size: cover;
+}	
+
+.custom-no-space-break{
+    white-space:nowrap;
+}
+
+.custom-main-container{
+	background-color:rgba(255, 255, 255, 0.9); -webkit-border-radius: 5px;-moz-border-radius: 5px; border-radius: 5px;
+}
+
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+}

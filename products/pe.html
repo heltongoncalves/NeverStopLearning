@@ -1,0 +1,275 @@
+<script>
+	var clientEnviromentParameters = {};
+	
+	function wa001Nav(e) {
+		if ( this.parentNode.classList.contains('show') ){
+			this.parentNode.classList.remove('show');
+			this.expanded = false;
+		} else {
+			this.parentNode.classList.add('show');
+			this.expanded = true;
+		}	
+		e.stopPropagation();
+		e.preventDefault();
+	}
+	
+	function getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+			results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	}
+	
+	function write_link_css( src ){
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.href = src;    
+		document.getElementsByTagName('head')[0].appendChild(link);		
+	}
+	
+	function loadScript( urlArray, completeCallback) {
+		
+		var result = null;
+		
+		if ( typeof urlArray == 'string' ){
+			urlArray = [ urlArray ];
+		}
+	
+	   var script = document.createElement('script'), done = false,
+		   body = document.body;
+	   
+	   script.src = urlArray[0];
+	   script.onload = script.onreadystatechange = function(){
+		 if ( !done && (!this.readyState ||
+			  this.readyState == "loaded" || this.readyState == "complete") ) {
+		   done = true;
+
+			console.log( 'loaded:' + urlArray[0] );
+		
+			var length = urlArray.length;
+			if ( length > 1 ){
+				urlArray.shift();
+				loadScript( urlArray, completeCallback );
+			}	
+
+		   if ( completeCallback && length == 1) {
+				result = completeCallback();
+   		   }	
+
+		  // IE memory leak
+		  script.onload = script.onreadystatechange = null;
+		  body.removeChild( script );
+		}
+	  };
+	  body.appendChild(script);
+	  
+	  return result;
+	}
+	
+	function returnProcessNavigation(){
+		function optionEnglish(s,e,l){
+			return '<a class="dropdown-item" href="" onclick="loadProcess(\'pe.html?l=en&i=' + clientEnviromentParameters.ident + '&p=Products.English.Exercises.Semester' + s + '.' + e + '\');return false;">' + l + '</a>';
+		}
+	
+		function optionDeutsch(s,e,l){
+			return '<a class="dropdown-item" href="" onclick="loadProcess(\'pe.html?l=de&i=' + clientEnviromentParameters.ident + '&p=Products.Deutsch.Aufgaben.Semester' + s + '.' + e + '\');return false;">' + l + '</a>';
+		}
+
+		if ( clientEnviromentParameters.lang == 'en' ){
+			return optionEnglish('1','Exercise002.NumbersToWords', 'S1.002 - Numbers to words') +
+				   optionEnglish('1','Exercise003.WordsToNumbers', 'S1.003 - Words to numbers') +
+			       optionEnglish('1','Exercise004.ListenTheNumbers', 'S1.004 - Listen the numbers') +
+				   optionEnglish('1','Exercise007.TextDictation', 'S1.007 - Text ditaction');
+		}	
+
+		if ( clientEnviromentParameters.lang == 'de' ){
+			return optionDeutsch('1','Aufgabe001.KonjugationProcess','S1.001 - Verben Konjugation.') +
+				   optionDeutsch('1','Aufgabe002.ZahlenZuWorter','S1.002 - Zahlen zu Worter.') +
+				   optionDeutsch('1','Aufgabe003.WorterZuZahlen','S1.003 - Worter zu Zahlen.') +
+				   optionDeutsch('1','Aufgabe004.HoerenSieDieZahlen','S1.004 - Hören Sie die Zahlen.') +
+				   optionDeutsch('1','Aufgabe005.WieSpatIstEs','S1.005 - Wie spät ist es?') +
+				   optionDeutsch('1','Aufgabe006.ErstDiktat','S1.006 - Erst Diktat.') +
+				   optionDeutsch('1','Aufgabe007.Diktattext','S1.007 - Diktattext.');				   
+		}	
+		
+	}		
+
+	function mountNavigation(){
+		
+		var urlBack = clientEnviromentParameters.urlBack;
+		var urlBackLang = urlBack;		
+		if ( clientEnviromentParameters.homePageLanguage ){
+			urlBackLang = '';
+		}
+		
+		var exercises_name = "";
+		if ( clientEnviromentParameters.lang == 'en' ){
+			exercises_name = 'Exercises';
+		} else if ( clientEnviromentParameters.lang == 'de' ){
+			exercises_name = 'Aufgaben';
+		}
+
+		var navigation = 			
+			'<'+'nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top"'+'>'+
+			  '<'+'button class="navbar-toggler navbar-toggler-center custom-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation"'+'>'+
+				'<'+'span class="navbar-toggler-icon"'+'><'+'/span'+'>'+
+			  '<'+'/button'+'>'+
+			  
+			  '<'+'div class="collapse navbar-collapse" id="navbarsExampleDefault"'+'>'+
+				'<'+'ul class="navbar-nav mr-auto"'+'>'+
+				  '<'+'li class="nav-item active"'+'><'+'a class="nav-link" href="' + urlBack + 'index.html"'+'>Home <'+'span class="sr-only"'+'>(current)<'+'/span'+'><'+'/a'+'><'+'/li'+'>' +
+				  '<'+'li class="nav-item active"'+'><'+'a class="nav-link" href="" onclick="loadProcess(\'pe.html?i=1&l=de&hpl=de\'); return false;"'+'>Deutsch <'+'span class="sr-only"'+'>(current)<'+'/span'+'><'+'/a'+'><'+'/li'+'>' +
+				  '<'+'li class="nav-item active"'+'><'+'a class="nav-link" href="" onclick="loadProcess(\'pe.html?i=1&l=en&hpl=en\'); return false;"'+'>English <'+'span class="sr-only"'+'>(current)<'+'/span'+'><'+'/a'+'><'+'/li'+'>' +
+				  '<'+'li class="nav-item dropdown" id="dropdown_all" '+'>'+
+					'<'+'a class="nav-link dropdown-toggle" href="" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"'+'>' + exercises_name + '<'+'/a'+'>'+
+					'<'+'div class="dropdown-menu" aria-labelledby="dropdown01"'+'>';
+
+			navigation += returnProcessNavigation();
+						
+			navigation +=									
+					'<'+'/div'+'>'+
+				  '<'+'/li'+'>'+
+				'<'+'/ul'+'>'+
+				/*'<'+'form class="form-inline my-2 my-lg-0"'+'>'+
+				  '<'+'input class="form-control mr-sm-2" type="text" placeholder="Search"'+'>'+
+				  '<'+'button class="btn btn-outline-success my-2 my-sm-0" type="submit"'+'>Search<'+'/button'+'>'+
+				'<'+'/form'+'>'+*/
+			  '<'+'/div'+'>'+
+			'<'+'/nav'+'>';
+	
+		return navigation;
+	}	
+
+
+	function addNewTab(){
+		if ( clientEnviromentParameters.process ){
+
+			var element = document.getElementById('main_container');					
+			element.innerHTML = "";
+		
+			var instanceProcess = eval(clientEnviromentParameters.process);
+			if (! instanceProcess){
+				throw new Error("Can't find: " + instanceProcess);
+			}
+			pr = new ProcessRunner( instanceProcess, document ); 
+			pr.run(window);
+		}
+
+		var navigation = mountNavigation();					
+		var ele = document.getElementById("navigation_container");
+		ele.innerHTML = navigation;
+		
+		if ( clientEnviromentParameters.homePageLanguage ){
+			var ele_dropdown_all = document.getElementById('dropdown_all');			
+			var element = document.getElementById('main_container');
+			element.innerHTML = ele_dropdown_all.innerHTML.replace('dropdown_all','main_container_dropdown_all').replace('dropdown01','dropdown02');
+			$('#dropdown02').click(wa001Nav);						
+		}
+		
+		$('#dropdown01').click(wa001Nav);
+
+		if ( clientEnviromentParameters.lang == 'en' ){
+			document.body.className = "custom-bgenglish";
+		} else if ( clientEnviromentParameters.lang == 'de' ){
+			document.body.className = "custom-bgdeutsch";						
+		}
+		
+		
+		
+		//TEMP
+		$(document).ready(function(){
+		  $('.dropdown-submenu a.test').on("click", function(e){
+			$(this).next('ul').toggle();
+			e.stopPropagation();
+			e.preventDefault();
+		  });
+		});
+		
+	}	
+
+
+	function loadProcess( url ){
+
+		clientEnviromentParameters.ident = getParameterByName('i', url );
+		clientEnviromentParameters.process = getParameterByName('p', url );
+		clientEnviromentParameters.lang = getParameterByName('l', url );
+		clientEnviromentParameters.homePageLanguage = getParameterByName('hpl', url);
+		clientEnviromentParameters.urlBack = '.'+('/..').repeat(parseInt(clientEnviromentParameters.ident))+'/'; 
+
+	
+		if ( clientEnviromentParameters.process ){
+			var url = clientEnviromentParameters.process.replace(/\./g,'/')+'.js';
+			loadScript(clientEnviromentParameters.urlBack + url, addNewTab );
+		} else {
+			addNewTab();
+		}										
+	}
+
+	function generatePage( url ){
+			
+		clientEnviromentParameters.ident = getParameterByName('i', url );
+		clientEnviromentParameters.process = getParameterByName('p', url );
+		clientEnviromentParameters.lang = getParameterByName('l', url );
+		clientEnviromentParameters.homePageLanguage = getParameterByName('hpl', url);
+		clientEnviromentParameters.urlBack = '.'+('/..').repeat(parseInt(clientEnviromentParameters.ident))+'/'; 
+	
+		if ( ! clientEnviromentParameters.ident || ! clientEnviromentParameters.lang ){ return; }	
+		
+		if ( ! clientEnviromentParameters.process && ! clientEnviromentParameters.homePageLanguage ){ return; }	
+							
+		var urlBack = clientEnviromentParameters.urlBack;
+				
+		write_link_css(urlBack + 'env/bootstrap/bootstrap.min.css');
+		write_link_css(urlBack + 'env/bootstrap/starter-template.css');						
+		write_link_css(urlBack + 'env/css/sjs.css');		
+		write_link_css(urlBack + 'env/css/css3clock.css');				
+	 
+		loadScript([		
+			
+			urlBack + 'env/jquery/jquery-3.2.1.js',				
+			urlBack + 'env/bootstrap/tether.min.js',
+			urlBack + 'env/bootstrap/bootstrap.min.js',
+			urlBack + 'env/bootstrap/ie10-viewport-bug-workaround.js',
+			
+			urlBack + 'fw/SjsFramework.js',
+			urlBack + 'fw/Field.js',
+			urlBack + 'fw/Grid.js',
+			
+			urlBack + '/fw/Interaction.js', 
+			urlBack + '/fw/Activity.js',
+			urlBack + '/fw/Process.js',		
+			urlBack + '/fw/ProcessRunner.js',					
+
+			urlBack + 'fw/EnviromentAuxiliaryFunctions.js',
+		
+			urlBack + 'Products/Products.js',
+			urlBack + 'Products/English/English.js',
+			urlBack + 'Products/English/Exercises/EnglishAuxiliaryFunctions.js',				
+			urlBack + 'Products/Deutsch/Deutsch.js',
+			urlBack + 'Products/Deutsch/Aufgaben/DeutschHilfsmittelFunktionen.js' ], function(){
+				loadProcess(url);
+			} );			
+	}
+	
+</script>
+
+<html lang="en">
+	
+	<head>
+	    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">	
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">		
+	</head>
+	
+<body>
+	<div id="navigation_container"></div>
+	<div id="main_container" class="container custom-main-container"></div>
+	<div id="footer_container"></div>	
+	<script>var pr = null; generatePage();</script>
+
+</body>
+
+</html>
