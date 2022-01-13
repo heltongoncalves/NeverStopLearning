@@ -8,3 +8,4 @@ This is a web application for teaching German and English. It features dynamic e
 For more, see:
 
 https://scifyou.blogspot.com/
+(Helton Gonçalves)
